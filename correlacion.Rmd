@@ -1,0 +1,102 @@
+---
+title: "correlacion"
+output:
+  html_document:
+    df_print: paged
+date: "2024-02-26"
+---
+### Ejercicio I
+
+```{r echo=TRUE}
+library(readxl)
+data = as.data.frame(read_excel("C:/correlacion/data.xlsx"))
+data
+```
+
+### Ejercicio II
+
+```{r}
+# Función para agregar coeficientes de correlación
+panel.cor = function(x, y, digits = 2, prefix = "", cex.cor, ...) {
+  usr = par("usr")
+  on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  Cor = abs(cor(x, y))
+  txt = paste0(prefix, format(c(Cor, 0.123456789), digits = digits)[1])
+  if(missing(cex.cor)) {
+    cex.cor = 0.4 / strwidth(txt)
+  }
+  text(0.5, 0.5, txt,
+       cex = 1 + cex.cor * Cor)
+}
+pairs(data,
+      upper.panel = panel.cor,
+      lower.panel = panel.smooth)
+```
+
+
+### Ejercicio III
+
+```{r echo=TRUE}
+cor.test(data$longitud, data$peso)
+```
+
+```{r warning=FALSE}
+library(correlation)
+resultados = correlation(data)
+resultados
+```
+
+
+### Ejercicio IV
+
+```{r echo=TRUE}
+library(ggpubr)
+ggscatter(data, x = "longitud", y = "peso",
+          add = "reg.line", conf.int = TRUE,
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Longitud piezas (mm)", ylab = "Peso piezas (mg)")
+```
+
+### Ejercico V
+
+```{r include=FALSE}
+install.packages("corplot", repos = "http://cran.us.r-project.org")
+```
+
+```{r }
+library(corrplot)
+corrplot(cor(data))
+```
+
+
+### Ejercicio VI
+
+##a)
+```{r }
+distancia = c(1.1,100.2,90.3,5.4,57.5,6.6,34.7,65.8,57.9,86.1)
+n_piezas = c(110,2,6,98,40,94,31,5,8,10)
+dist_ncuent = data.frame(distancia,n_piezas)
+knitr::kable(dist_ncuent)
+```
+
+##b)
+```{r echo=TRUE}
+cor.test(dist_ncuent$distancia, dist_ncuent$n_piezas)
+```
+#El coeficiente de correlación es -0.9249824
+
+##c y d)
+```{r warning=FALSE}
+library(correlation)
+resultados = correlation(dist_ncuent)
+resultados
+```
+
+#Una correlación es estadísticamente significativa cuando el valor de p es inferior al **nivel de significancia**. El coeficiente de correlación que tenemos (0,92) nos indica que existe una relación lineal inversa quasiperfecta ya que se encuentra próximo a -1. Los valores del intervalo de confianza del 95% muestrean el intervalo de valores para el coeficiente de correlación [-0.98, -0.71]. Atendiendo a los valores 'p' podemos afirmar que la correlacion es significativa ya que el p-value ('0.001') es **inferior al nivel de significancia** '0.05' (ya que el IC es '0,95', el nivel de significancia es de '0,05').
+
+#En este caso, la relación es significativa porque el valor de p es 0.001***, inferior al nivel de significancia (0.05%).
+
+
+
+
